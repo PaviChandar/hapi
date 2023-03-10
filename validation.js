@@ -22,7 +22,6 @@ export const registerValidation = (input) => {
 }
 
 export const userValidation = (user) => {
-    console.log("inside user validation", user)
     const usersSchema = Joi.object({
         username:Joi.string().min(5).required(),
         password:Joi.string().min(5).required()

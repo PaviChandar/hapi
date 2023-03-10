@@ -1,7 +1,6 @@
 import Hapi from "@hapi/hapi"
 import vision from "vision"
 import Handlebars from "handlebars"
-import Path from "path"
 
 const init = async () => {
     const server = Hapi.server({

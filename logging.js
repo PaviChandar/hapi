@@ -1,8 +1,8 @@
 import Hapi from "@hapi/hapi"
-// import Loguser from "./model/loguser.js"
-// import { userValidation } from "./validation.js"
-// import bunyan from "bunyan"
-import routes from "./src/routes/index.js"
+import Loguser from "./model/loguser.js"
+import { userValidation } from "./validation.js"
+import bunyan from "bunyan"
+// import routes from "./src/routes/index.js"
 
 const init = async () => {
     const server = Hapi.server({
@@ -10,7 +10,63 @@ const init = async () => {
         host: 'localhost'
     })
 
-    routes(server)
+    // routes(server)
+
+    var log = bunyan.createLogger({
+        name: 'userBunyan',
+        serializers: bunyan.stdSerializers
+    })
+
+    server.ext('onRequest', (request, h) => {
+        if(request.headers && request.headers['postman-token']){
+            console.log("Request headers in onRequest method : ", request.headers['postman-token'])
+        }
+        return h.continue
+    })
+
+    server.ext('onPreAuth', (request,h) => {
+        console.log("onPreAuth functionality")
+        return h.continue
+    })
+
+    server.ext('onCredentials', (request,h) => {
+        console.log("onCredentials functionality")
+        return h.continue
+    })
+
+    server.ext('onPostAuth', (request, h, error) => {
+        if (request.payload) {
+            console.log("onPostAuth payload : ", request.payload)
+        }
+        return h.continue
+    })
+
+    server.route({
+        method: 'POST',
+        path: '/log',
+        handler: async function (request, h) {
+            const userError = userValidation(request.payload)
+            try {
+                if (userError) {
+                    const errors = []
+                    userError.error.details.forEach((details) => {
+                        let error = { [details.path.toString()]: details.message }
+                        errors.push(error)
+                    })
+                    throw errors
+                } else {
+                    const newUser = new Loguser({ ...request.payload })
+                    await newUser.save()
+                    return newUser
+                }
+            } catch (error) {
+                console.log("Error : ", error)
+                const err = new Error(error)
+                log.info({ err }, error)
+                return error
+            }
+        }
+    })
 
     await server.start()
     console.log("Server running on port %s", server.info.uri);

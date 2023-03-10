@@ -10,12 +10,12 @@ const init = async () => {
         method: 'POST',
         path: '/create',
         handler: function (request, h)  {
-            const name = request.payload.name
-            return `Hello `+name
+            // const name = request.payload.name
+            // return `Hello `+name
 
-            // const user = request.params.user ? request.params.user : 'stranger';
+            const user = request.params.user ? request.params.user : 'stranger';
 
-            // return `Hello ${user}!`;
+            return `Hello ${user}!`;
         }
     })
 

@@ -12,8 +12,8 @@ const init = async () => {
 
     server.route({
         method: 'GET',
-        // path: '/user/{newuser?}',
-        path:'/',
+        path: '/user/{newuser?}',
+        // path:'/',
         handler: (request, h) => {
             // const user = {
             //     firstname:"Pavithra",
@@ -22,10 +22,10 @@ const init = async () => {
             //     id:123
             // }
 
-            // const newuser = request.params.newuser ? request.params.newuser : 'stranger'
-            // return `hello, ${newuser}`
+            const newuser = request.params.newuser ? request.params.newuser : 'stranger'
+            return `hello, ${newuser}`
 
-            return request.query
+            // return request.query
         }
     })
 
