@@ -41,10 +41,26 @@ const init = async () => {
         return h.continue
     })
 
+    server.ext('onPreHandler', (request,h)=> {
+        console.log("onPreHandler : before entering handler function")
+        return h.continue
+    })
+
+    server.ext('onPostHandler', (request,h)=> {
+        console.log("onPostHandler : after finishing handler function")
+        return h.continue
+    })
+
+    server.ext('onPreResponse', (request,h) => {
+        console.log("req res : ", request.response.source)
+        return h.continue
+    })
+
     server.route({
         method: 'POST',
         path: '/log',
         handler: async function (request, h) {
+            console.log("request payload: ", request.payload)
             const userError = userValidation(request.payload)
             try {
                 if (userError) {
@@ -57,7 +73,8 @@ const init = async () => {
                 } else {
                     const newUser = new Loguser({ ...request.payload })
                     await newUser.save()
-                    return newUser
+                    const response = newUser
+                    return response
                 }
             } catch (error) {
                 console.log("Error : ", error)
